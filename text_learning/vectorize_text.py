@@ -41,7 +41,7 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
     for path in from_person:
         ### only look at first 200 emails when developing
         ### once everything is working, remove this line to run over full dataset
-        temp_counter += 1
+        # temp_counter += 1
         if temp_counter < 200:
             path = os.path.join('..', path[:-1])
             print path
@@ -49,16 +49,32 @@ for name, from_person in [("sara", from_sara), ("chris", from_chris)]:
 
             ### use parseOutText to extract the text from the opened email
 
+            text = parseOutText(email)
+
+            text_list = text.split()
             ### use str.replace() to remove any instances of the words
-            ### ["sara", "shackleton", "chris", "germani"]
+            words_to_remove = ["sara", "shackleton", "chris", "germani"]
+
+            for word in words_to_remove:
+              text = text.replace(word, "")
+
+            # text = ' '.join([word for word in text_list if word not in words_to_remove])
 
             ### append the text to word_data
+            word_data.append(text)
 
             ### append a 0 to from_data if email is from Sara, and 1 if email is from Chris
-
+            if name == "sara":
+              from_data.append(0)
+            else:
+              from_data.append(1)
 
             email.close()
 
+print
+print('word 152', word_data[152])
+print len(word_data)
+print
 print "emails processed"
 from_sara.close()
 from_chris.close()
@@ -71,5 +87,13 @@ pickle.dump( from_data, open("your_email_authors.pkl", "w") )
 
 
 ### in Part 4, do TfIdf vectorization here
+from sklearn.feature_extraction.text import TfidfVectorizer
 
+vectorizer = TfidfVectorizer(stop_words='english')
+vect_word_data = vectorizer.fit_transform(word_data)
+vocab_list = vectorizer.get_feature_names()
+
+print(len(vocab_list))
+
+# vectorizer.fit_transform(word_data)
 
